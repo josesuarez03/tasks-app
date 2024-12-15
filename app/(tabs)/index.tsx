@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { testConnection } from '@/app/supabaseClient';
+import { testConnection } from '@/core/supabase/client';
 
 export default function App() {
   useEffect(() => {
