@@ -13,10 +13,19 @@ const TaskList = ({ tasks, onTaskDeleted }: { tasks: Task[]; onTaskDeleted: (tas
     }
   };
 
+  // Add a render for when there are no tasks
+  if (!tasks || tasks.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text>No tasks available</Text>
+      </View>
+    );
+  }
+
   return (
     <FlatList
       data={tasks}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.id || Math.random().toString()} // Fallback key generator
       renderItem={({ item }) => (
         <View style={styles.taskItem}>
           <Text style={styles.title}>{item.title}</Text>
@@ -31,6 +40,11 @@ const TaskList = ({ tasks, onTaskDeleted }: { tasks: Task[]; onTaskDeleted: (tas
 const styles = StyleSheet.create({
   taskItem: { padding: 15, borderBottomWidth: 1, borderColor: '#ccc' },
   title: { fontWeight: 'bold' },
+  emptyContainer: { 
+    padding: 20, 
+    alignItems: 'center', 
+    justifyContent: 'center' 
+  },
 });
 
 export default TaskList;

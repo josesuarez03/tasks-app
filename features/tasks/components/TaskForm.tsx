@@ -9,7 +9,7 @@ const TaskForm = ({ onTaskAdded }: { onTaskAdded: (task: Task) => void }) => {
 
   const handleAddTask = async () => {
     try {
-      const newTask = await addTask({ title, description, isCompleted: false });
+      const newTask = await addTask({ title, description, completed: false });
       onTaskAdded(newTask);
       setTitle('');
       setDescription('');
