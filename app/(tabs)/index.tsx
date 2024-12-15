@@ -15,21 +15,19 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Tasks">
-          <Stack.Screen
-            name="Tasks"
-            component={TaskScreen}
-            options={{ title: 'Task Manager' }}
-          />
-          <Stack.Screen
-            name="Uploads"
-            component={UploadScreen}
-            options={{ title: 'File Uploads' }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
+    <Stack.Navigator initialRouteName="Tasks">
+      <Stack.Screen
+        name="Tasks"
+        component={TaskScreen}
+        options={{ title: 'Task Manager' }}
+      />
+      <Stack.Screen
+        name="Uploads"
+        component={UploadScreen}
+        options={{ title: 'File Uploads' }}
+      />
+    </Stack.Navigator>
+  </SafeAreaView>
   );
 }
 
