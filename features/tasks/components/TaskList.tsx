@@ -1,38 +1,64 @@
-import React from 'react';
-import { View, Text, FlatList, Button, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, FlatList, Button, StyleSheet, Alert } from 'react-native';
 import { Task } from '../models/Task';
-import { deleteTask } from '../services/taskService';
+import { deleteTask, updateTask } from '../services/taskService';
+import TaskUpdateForm from './TaskUpdate';
 
-const TaskList = ({ tasks, onTaskDeleted }: { tasks: Task[]; onTaskDeleted: (taskId: string) => void }) => {
+const TaskList = ({ tasks, onTaskDeleted, onTaskUpdated }: { tasks: Task[]; onTaskDeleted: (taskId: string) => void; onTaskUpdated: (task: Task) => void }) => {
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+
   const handleDelete = async (taskId: string) => {
     try {
       await deleteTask(taskId);
       onTaskDeleted(taskId);
     } catch (error) {
       console.error('Error deleting task:', error);
+      Alert.alert('Error', 'Failed to delete task.');
     }
   };
 
-  // Add a render for when there are no tasks
-  if (!tasks || tasks.length === 0) {
+  const handleUpdate = async (task: Task) => {
+    setEditingTask(task);
+  };
+
+  const handleCloseUpdateForm = () => {
+    setEditingTask(null);
+  };
+
+  if (editingTask) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text>No tasks available</Text>
-      </View>
+      <TaskUpdateForm
+        task={editingTask}
+        onTaskUpdated={onTaskUpdated}
+        onClose={handleCloseUpdateForm}
+      />
     );
   }
 
   return (
     <FlatList
       data={tasks}
-      keyExtractor={(item) => item.id || Math.random().toString()} // Fallback key generator
-      renderItem={({ item }) => (
-        <View style={styles.taskItem}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text>{item.description}</Text>
-          <Button title="Delete" onPress={() => handleDelete(item.id)} />
-        </View>
-      )}
+      keyExtractor={(item) => item.id || Math.random().toString()}
+      renderItem={({ item }) => {
+        return (
+          <View style={styles.taskItem}>
+            <Text style={[styles.title, item.completed && styles.completed]}>
+              {item.title}
+            </Text>
+            <Text>{item.description}</Text>
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Delete"
+                onPress={() => item.id ? handleDelete(item.id) : console.error('Invalid task ID')}
+              />
+              <Button
+                title="Update"
+                onPress={() => handleUpdate(item)}
+              />
+            </View>
+          </View>
+        );
+      }}
     />
   );
 };
@@ -40,10 +66,11 @@ const TaskList = ({ tasks, onTaskDeleted }: { tasks: Task[]; onTaskDeleted: (tas
 const styles = StyleSheet.create({
   taskItem: { padding: 15, borderBottomWidth: 1, borderColor: '#ccc' },
   title: { fontWeight: 'bold' },
-  emptyContainer: { 
-    padding: 20, 
-    alignItems: 'center', 
-    justifyContent: 'center' 
+  completed: { textDecorationLine: 'line-through', color: 'gray' },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
   },
 });
 
